@@ -27,7 +27,7 @@ public class Main {
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("PING")) {
-                writer.println("PONG " + line.substring(5));
+                writer.println("PONG" + line.substring(5));
             } else {
                 System.out.println(line);
             }

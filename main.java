@@ -1,46 +1,39 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Scanner;
 
-public class TwitchBot {
-    // Replace USERNAME and TOKEN with your Twitch username and token
-    private static final String USERNAME = "USERNAME";
-    private static final String TOKEN = "TOKEN";
+public class Main {
+    private static final String HOST = "irc.chat.twitch.tv";
+    private static final int PORT = 6667;
 
-    // Connect to the Twitch IRC server
-    private static Socket socket;
-    private static BufferedReader reader;
-    private static BufferedWriter writer;
+    public static void main(String[] args) throws IOException {
+        // replace TOKEN with your bot's token
+        String token = TOKEN;
+        // replace USERNAME with your bot's username
+        String username = USERNAME;
 
-    public static void main(String[] args) throws Exception {
-        socket = new Socket("irc.chat.twitch.tv", 6667);
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        Socket socket = new Socket(HOST, PORT);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
-        // Send the login credentials
-        writer.write("PASS " + TOKEN + "\r\n");
-        writer.write("NICK " + USERNAME + "\r\n");
-        writer.flush();
+        writer.println("PASS " + token);
+        writer.println("NICK " + username);
+        writer.println("JOIN #" + username);
 
-        // Join the chat channel
-        String channel = "#YOUR_CHANNEL_NAME_HERE";
-        writer.write("JOIN " + channel + "\r\n");
-        writer.flush();
-
-        // Function to send a message to the chat
-        void sendMessage(String message) {
-            writer.write("PRIVMSG " + channel + " :" + message + "\r\n");
-            writer.flush();
-        }
-
-        // Main loop to listen for messages and respond
+        Scanner scanner = new Scanner(System.in);
         String line;
         while ((line = reader.readLine()) != null) {
-            // If the message starts with an exclamation mark, reply with a message
-            if (line.startsWith("!")) {
-                sendMessage("Hello, this is a message from the bot!");
+            if (line.startsWith("PING")) {
+                writer.println("PONG " + line.substring(5));
+            } else {
+                System.out.println(line);
+            }
+
+            if (scanner.hasNextLine()) {
+                writer.println(scanner.nextLine());
             }
         }
     }

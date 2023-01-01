@@ -13,3 +13,4 @@ To use this code, you will need to replace USERNAME and TOKEN with your Twitch u
  - The bot also reads lines from standard input (i.e. the console) and sends them to the server as chat messages.
 
 I'm pretty sure Twitch developers have a version in Python lol
+

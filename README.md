@@ -16,5 +16,6 @@ I'm pretty sure Twitch developers have a version in Python lol
 
 # Credit
 [Prime](https://github.com/PrimeTDMomega/) - For overusing IntelliSense
+<br>
 [Evelyn Gosselin](https://github.com/evelyn-gosselin) - Having Skill
 

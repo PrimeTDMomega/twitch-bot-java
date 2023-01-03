@@ -19,8 +19,8 @@ public class Main {
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
-        writer.println("PASS " + token);
-        writer.println("NICK " + username);
+        writer.println("PASS" + token);
+        writer.println("NICK" + username);
         writer.println("JOIN #" + username);
 
         Scanner scanner = new Scanner(System.in);

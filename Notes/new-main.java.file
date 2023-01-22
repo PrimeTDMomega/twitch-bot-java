@@ -1,0 +1,33 @@
+package com.twitchbot;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.twitchbot.command.CommandHandler;
+import com.twitchbot.command.GitHubCommand;
+import org.pircbotx.PircBotX;
+import org.pircbotx.exception.IrcException;
+import org.pircbotx.exception.NickAlreadyInUseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class Main {
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+
+    public static void main(String[] args) {
+        Properties prop = new Properties();
+        InputStream input = null;
+        try {
+            input = new FileInputStream("config.properties");
+            prop.load(input);
+            String token = prop.getProperty("token");
+            String username = prop.getProperty("username");
+            String host = prop.getProperty("host");
+            int port = Integer.parseInt(prop.getProperty("port"));
+            String prefix = prop.getProperty("prefix");
+            if(token == null || token.isEmpty() || username == null || username

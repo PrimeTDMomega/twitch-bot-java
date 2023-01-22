@@ -1,0 +1,27 @@
+TwitchChatBot/
+|
++-- src/
+|   |
+|   +-- main/
+|   |   |
+|   |   +-- java/
+|   |   |   |
+|   |   |   +-- com/
+|   |   |   |   |
+|   |   |   |   +-- example/
+|   |   |   |   |   |
+|   |   |   |   |   +-- Main.java
+|   |   |   |   |   +-- Config.java
+|   |   |   |   |   +-- commands/
+|   |   |   |   |        |
+|   |   |   |   |        +-- CommandA.java
+|   |   |   |   |        +-- CommandB.java
+|   |   |   |   |        +-- CommandC.java
+|   |   |   |   |
+|   |   |   |   +-- MessageHandler.java
+|   |
+|   +-- resources/
+|   |   |
+|   |   +-- config.properties
+|
++-- pom.xml

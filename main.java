@@ -1,40 +1,84 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.util.Scanner;
+import java.net.SocketException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.pircbotx.PircBotX;
+import org.pircbotx.exception.IrcException;
+import org.pircbotx.exception.NickAlreadyInUseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Main {
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
     private static final String HOST = "irc.chat.twitch.tv";
     private static final int PORT = 6667;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // replace TOKEN with your bot's token
         String token = TOKEN;
         // replace USERNAME with your bot's username
         String username = USERNAME;
 
-        Socket socket = new Socket(HOST, PORT);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+        PircBotX bot = new PircBotX();
+        bot.setName(username);
+        bot.setServer(HOST, PORT);
+        bot.setLogin(username);
+        bot.setAutoNickChange(true);
+        bot.setVerbose(true);
+        AtomicBoolean reconnect = new AtomicBoolean(true);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(new MessageHandler(bot));
 
-        writer.println("PASS" + token);
-        writer.println("NICK" + username);
-        writer.println("JOIN #" + username);
-
-        Scanner scanner = new Scanner(System.in);
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.startsWith("PING")) {
-                writer.println("PONG" + line.substring(5));
-            } else {
-                System.out.println(line);
+        while (reconnect.get()) {
+            try {
+                bot.connect();
+                bot.identify(token);
+                bot.joinChannel("#" + username);
+                reconnect.set(false);
+            } catch (NickAlreadyInUseException e) {
+                LOG.error("Nickname already in use. Retrying with different nickname.");
+            } catch (IOException | IrcException e) {
+                LOG.error("Error connecting to Twitch chat server: {}", e.getMessage());
+                LOG.info("Retrying connection in 30 seconds...");
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e1) {
+                    LOG.error("Thread sleep interrupted: {}", e1.getMessage());
+                }
             }
+        }
+        executor.shutdown();
+    }
+}
 
-            if (scanner.hasNextLine()) {
-                writer.println(scanner.nextLine());
+class MessageHandler implements Runnable {
+    private PircBotX bot;
+
+    public MessageHandler(PircBotX bot) {
+        this.bot = bot;
+    }
+
+    @Override
+    public void run() {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        while (true) {
+            try {
+                String line = reader.readLine();
+                if (line != null) {
+                    bot.sendMessage("#" + bot.getNick(), line);
+                }
+            } catch (IOException e) {
+                LOG.error("Error reading user input: {}", e.getMessage());
+            } catch (SocketException e) {
+                LOG.error("Error sending message                } catch (SocketException e) {
+                    LOG.error("Error sending message: {}", e.getMessage());
+                }
             }
         }
     }
 }
+

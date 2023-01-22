@@ -1,4 +1,4 @@
-## Note - This is not a file you will actually use, I'll format it into a Twitch Bot you can use in a bit. Also SHOUTOUT to EvelynGosselin for helping with the original Java code !
+
 
 ## Overview
 
